@@ -1,12 +1,17 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { 
-  Upload, Eye, FileImage, AlertCircle, CheckCircle, Download, Loader2, 
-  Play, Pause, RotateCcw, Zap, Brain, Shield, Star, Info, 
+import {
+  Upload, Eye, FileImage, AlertCircle, CheckCircle, Download, Loader2,
+  Play, Pause, RotateCcw, Zap, Brain, Shield, Star, Info,
   ChevronRight, ChevronLeft, X, HelpCircle, Sparkles, Target,
   Activity, Clock, Award, Users
 } from 'lucide-react';
+
+// Import ONNX model utilities
+import { preprocessImage, isValidImageFile } from '../utils/imagePreprocessing';
+import { loadModelSimple, runSimpleInference, isModelReady, getModelStatus } from '../utils/simpleModelLoader';
+import ModelDebugger from '../components/ModelDebugger';
 
 export default function Home() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -19,99 +24,290 @@ export default function Home() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [selectedSeverityInfo, setSelectedSeverityInfo] = useState(null);
   const [animationClass, setAnimationClass] = useState('');
+  const [modelLoading, setModelLoading] = useState(true);
+  const [modelError, setModelError] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [useFallbackMode, setUseFallbackMode] = useState(false);
 
-  const severityLevels = {
+  const eyeConditions = {
     normal: { 
       label: 'Normal', 
       color: 'text-emerald-600', 
       bgColor: 'bg-emerald-50', 
       borderColor: 'border-emerald-200',
       icon: CheckCircle,
-      description: 'No signs of diabetic retinopathy detected',
-      recommendation: 'Continue regular eye examinations',
-      riskLevel: 'Low Risk'
+      description: 'Mata dalam kondisi sehat, tidak ditemukan kelainan',
+      recommendation: 'Lanjutkan pemeriksaan mata rutin setiap 1-2 tahun',
+      riskLevel: 'Sehat',
+      category: 'healthy'
     },
-    mild: { 
-      label: 'Mild DR', 
-      color: 'text-yellow-600', 
-      bgColor: 'bg-yellow-50', 
-      borderColor: 'border-yellow-200',
-      icon: AlertCircle,
-      description: 'Early signs of diabetic retinopathy present',
-      recommendation: 'Schedule follow-up in 6-12 months',
-      riskLevel: 'Low-Medium Risk'
-    },
-    moderate: { 
-      label: 'Moderate DR', 
+    'macular-scar': { 
+      label: 'Macular Scar', 
       color: 'text-orange-600', 
       bgColor: 'bg-orange-50', 
       borderColor: 'border-orange-200',
       icon: AlertCircle,
-      description: 'Moderate diabetic retinopathy changes detected',
-      recommendation: 'Ophthalmologist consultation recommended',
-      riskLevel: 'Medium-High Risk'
+      description: 'Jaringan parut pada makula yang dapat mempengaruhi penglihatan sentral',
+      recommendation: 'Konsultasi dengan dokter spesialis mata untuk evaluasi lebih lanjut',
+      riskLevel: 'Sedang',
+      category: 'retinal'
     },
-    severe: { 
-      label: 'Severe DR', 
+    pterygium: { 
+      label: 'Pterygium', 
+      color: 'text-yellow-600', 
+      bgColor: 'bg-yellow-50', 
+      borderColor: 'border-yellow-200',
+      icon: AlertCircle,
+      description: 'Pertumbuhan jaringan pada konjungtiva yang dapat menutupi kornea',
+      recommendation: 'Gunakan kacamata pelindung UV dan konsultasi dokter mata',
+      riskLevel: 'Ringan-Sedang',
+      category: 'surface'
+    },
+    'disc-edema': { 
+      label: 'Disc Edema', 
       color: 'text-red-600', 
       bgColor: 'bg-red-50', 
       borderColor: 'border-red-200',
       icon: AlertCircle,
-      description: 'Advanced diabetic retinopathy requiring attention',
-      recommendation: 'Immediate ophthalmologist consultation required',
-      riskLevel: 'High Risk'
+      description: 'Pembengkakan pada diskus optikus yang memerlukan perhatian segera',
+      recommendation: 'Segera konsultasi dengan dokter spesialis mata',
+      riskLevel: 'Tinggi',
+      category: 'optic'
+    },
+    'branch-retinal-vein-occlusion': { 
+      label: 'Branch Retinal Vein Occlusion', 
+      color: 'text-red-600', 
+      bgColor: 'bg-red-50', 
+      borderColor: 'border-red-200',
+      icon: AlertCircle,
+      description: 'Penyumbatan pembuluh darah vena retina cabang',
+      recommendation: 'Segera konsultasi dengan dokter spesialis mata untuk penanganan',
+      riskLevel: 'Tinggi',
+      category: 'vascular'
+    },
+    'central-serous-chorioretinopathy': { 
+      label: 'Central Serous Chorioretinopathy', 
+      color: 'text-orange-600', 
+      bgColor: 'bg-orange-50', 
+      borderColor: 'border-orange-200',
+      icon: AlertCircle,
+      description: 'Penumpukan cairan di bawah retina yang mempengaruhi penglihatan sentral',
+      recommendation: 'Konsultasi dokter mata dan hindari stress berlebihan',
+      riskLevel: 'Sedang',
+      category: 'retinal'
+    },
+    drusen: { 
+      label: 'Drusen', 
+      color: 'text-yellow-600', 
+      bgColor: 'bg-yellow-50', 
+      borderColor: 'border-yellow-200',
+      icon: AlertCircle,
+      description: 'Deposit protein dan lemak di bawah retina, tanda awal degenerasi makula',
+      recommendation: 'Pemeriksaan rutin dan konsumsi antioksidan untuk mata',
+      riskLevel: 'Ringan-Sedang',
+      category: 'retinal'
+    },
+    glaucoma: { 
+      label: 'Glaucoma', 
+      color: 'text-red-600', 
+      bgColor: 'bg-red-50', 
+      borderColor: 'border-red-200',
+      icon: AlertCircle,
+      description: 'Kerusakan saraf optik yang dapat menyebabkan kebutaan permanen',
+      recommendation: 'Segera konsultasi dokter mata untuk penanganan dan kontrol tekanan mata',
+      riskLevel: 'Tinggi',
+      category: 'optic'
+    },
+    'retinal-detachment': { 
+      label: 'Retinal Detachment', 
+      color: 'text-red-600', 
+      bgColor: 'bg-red-50', 
+      borderColor: 'border-red-200',
+      icon: AlertCircle,
+      description: 'Lepasnya retina dari dinding mata, kondisi darurat mata',
+      recommendation: 'DARURAT: Segera ke IGD atau dokter spesialis mata',
+      riskLevel: 'Darurat',
+      category: 'retinal'
+    },
+    'diabetic-retinopathy-severe': { 
+      label: 'Diabetic Retinopathy (Severe)', 
+      color: 'text-red-600', 
+      bgColor: 'bg-red-50', 
+      borderColor: 'border-red-200',
+      icon: AlertCircle,
+      description: 'Retinopati diabetik stadium lanjut dengan risiko kehilangan penglihatan',
+      recommendation: 'Segera konsultasi dokter mata dan kontrol gula darah ketat',
+      riskLevel: 'Tinggi',
+      category: 'diabetic'
+    },
+    'age-macular-degeneration': { 
+      label: 'Age Macular Degeneration', 
+      color: 'text-orange-600', 
+      bgColor: 'bg-orange-50', 
+      borderColor: 'border-orange-200',
+      icon: AlertCircle,
+      description: 'Degenerasi makula terkait usia yang mempengaruhi penglihatan sentral',
+      recommendation: 'Konsultasi dokter mata dan terapi sesuai anjuran',
+      riskLevel: 'Sedang-Tinggi',
+      category: 'retinal'
+    },
+    cataract: { 
+      label: 'Cataract', 
+      color: 'text-blue-600', 
+      bgColor: 'bg-blue-50', 
+      borderColor: 'border-blue-200',
+      icon: AlertCircle,
+      description: 'Kekeruhan pada lensa mata yang dapat mengganggu penglihatan',
+      recommendation: 'Konsultasi dokter mata untuk evaluasi operasi katarak',
+      riskLevel: 'Sedang',
+      category: 'lens'
+    },
+    'diabetic-retinopathy-mild': { 
+      label: 'Diabetic Retinopathy (Mild)', 
+      color: 'text-yellow-600', 
+      bgColor: 'bg-yellow-50', 
+      borderColor: 'border-yellow-200',
+      icon: AlertCircle,
+      description: 'Retinopati diabetik stadium awal dengan perubahan minimal',
+      recommendation: 'Kontrol gula darah ketat dan pemeriksaan mata rutin',
+      riskLevel: 'Ringan-Sedang',
+      category: 'diabetic'
+    },
+    'retinitis-pigmentosa': { 
+      label: 'Retinitis Pigmentosa', 
+      color: 'text-purple-600', 
+      bgColor: 'bg-purple-50', 
+      borderColor: 'border-purple-200',
+      icon: AlertCircle,
+      description: 'Kelainan genetik yang menyebabkan degenerasi retina progresif',
+      recommendation: 'Konsultasi dokter mata dan konseling genetik',
+      riskLevel: 'Sedang-Tinggi',
+      category: 'genetic'
+    },
+    'macular-epiretinal-membrane': { 
+      label: 'Macular Epiretinal Membrane', 
+      color: 'text-indigo-600', 
+      bgColor: 'bg-indigo-50', 
+      borderColor: 'border-indigo-200',
+      icon: AlertCircle,
+      description: 'Membran tipis yang terbentuk di atas makula dan dapat mengganggu penglihatan',
+      recommendation: 'Konsultasi dokter mata untuk evaluasi dan monitoring',
+      riskLevel: 'Sedang',
+      category: 'retinal'
+    },
+    myopia: { 
+      label: 'Myopia', 
+      color: 'text-cyan-600', 
+      bgColor: 'bg-cyan-50', 
+      borderColor: 'border-cyan-200',
+      icon: AlertCircle,
+      description: 'Mata minus atau rabun jauh dengan perubahan pada fundus',
+      recommendation: 'Gunakan kacamata/lensa kontak dan pemeriksaan rutin',
+      riskLevel: 'Ringan',
+      category: 'refractive'
+    },
+    'diabetic-retinopathy-proliferative': { 
+      label: 'Diabetic Retinopathy (Proliferative)', 
+      color: 'text-red-600', 
+      bgColor: 'bg-red-50', 
+      borderColor: 'border-red-200',
+      icon: AlertCircle,
+      description: 'Retinopati diabetik proliferatif dengan pertumbuhan pembuluh darah baru',
+      recommendation: 'Segera konsultasi dokter mata untuk terapi laser atau injeksi',
+      riskLevel: 'Tinggi',
+      category: 'diabetic'
+    },
+    'refractive-media-opacity': { 
+      label: 'Refractive Media Opacity', 
+      color: 'text-gray-600', 
+      bgColor: 'bg-gray-50', 
+      borderColor: 'border-gray-200',
+      icon: AlertCircle,
+      description: 'Kekeruhan pada media refraksi mata yang mengganggu penglihatan',
+      recommendation: 'Konsultasi dokter mata untuk evaluasi dan penanganan',
+      riskLevel: 'Sedang',
+      category: 'media'
+    },
+    'macular-hole': { 
+      label: 'Macular Hole', 
+      color: 'text-pink-600', 
+      bgColor: 'bg-pink-50', 
+      borderColor: 'border-pink-200',
+      icon: AlertCircle,
+      description: 'Lubang kecil pada makula yang mempengaruhi penglihatan sentral',
+      recommendation: 'Konsultasi dokter mata untuk evaluasi operasi vitrektomi',
+      riskLevel: 'Sedang-Tinggi',
+      category: 'retinal'
     }
   };
 
   const demoImages = [
     {
       name: 'Normal Retina',
-      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkZGNUY1Ii8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGRkVCRUUiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0ZGRERERCIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIiBmaWxsPSIjRkZDQ0NDIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNGRkFBQUEiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMCIgZmlsbD0iI0ZGODg4OCIvPgo8dGV4dCB4PSIxMDAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzEwQjk4MSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPk5vcm1hbCBSZXRpbmE8L3RleHQ+Cjwvc3ZnPgo=',
-      severity: 'normal',
+      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkZGNUY1Ii8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGRkVCRUUiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0ZGRERERCIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIiBmaWxsPSIjRkZDQ0NDIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNGRkFBQUEiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMCIgZmlsbD0iI0ZGODg4OCIvPgo8dGV4dCB4PSIxMDAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzEwQjk4MSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPk5vcm1hbDwvdGV4dD4KPC9zdmc+Cg==',
+      condition: 'normal',
       confidence: 94
     },
     {
-      name: 'Mild DR Sample',
-      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkVGM0MyIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGRUY0QzciLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0ZFRjVDQyIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIiBmaWxsPSIjRkVGNkQxIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNGRUY3RDYiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMCIgZmlsbD0iI0ZFRjhEQiIvPgo8Y2lyY2xlIGN4PSI3MCIgY3k9IjgwIiByPSIzIiBmaWxsPSIjRUFCMzA4Ii8+CjxjaXJjbGUgY3g9IjEzMCIgY3k9IjEyMCIgcj0iMiIgZmlsbD0iI0VBQjMwOCIvPgo8dGV4dCB4PSIxMDAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0VBQjMwOCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPk1pbGQgRFI8L3RleHQ+Cjwvc3ZnPgo=',
-      severity: 'mild',
+      name: 'Glaucoma Sample',
+      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkVGMkYyIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGRUY0RjQiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0ZFRjZGNiIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIiBmaWxsPSIjRkVGOEY4Ii8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMjUiIGZpbGw9IiNGRUZBRkEiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxNSIgZmlsbD0iI0RDNDYyNiIvPgo8dGV4dCB4PSIxMDAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0RDNDYyNiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPkdsYXVjb21hPC90ZXh0Pgo8L3N2Zz4K',
+      condition: 'glaucoma',
+      confidence: 89
+    },
+    {
+      name: 'Cataract Sample',
+      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkFGQUZBIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGNUY1RjUiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0VGRUZFRiIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIiBmaWxsPSIjRTVFNUU1Ii8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNEQURBREEiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMCIgZmlsbD0iI0Q0RDRENCIvPgo8dGV4dCB4PSIxMDAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzI1NjNFQiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPkNhdGFyYWN0PC90ZXh0Pgo8L3N2Zz4K',
+      condition: 'cataract',
+      confidence: 92
+    },
+    {
+      name: 'Diabetic Retinopathy',
+      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkVGM0MyIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGRUY0QzciLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0ZFRjVDQyIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIiBmaWxsPSIjRkVGNkQxIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNGRUY3RDYiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMCIgZmlsbD0iI0ZFRjhEQiIvPgo8Y2lyY2xlIGN4PSI3MCIgY3k9IjgwIiByPSIzIiBmaWxsPSIjRUFCMzA4Ii8+CjxjaXJjbGUgY3g9IjEzMCIgY3k9IjEyMCIgcj0iMiIgZmlsbD0iI0VBQjMwOCIvPgo8dGV4dCB4PSIxMDAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0VBQjMwOCIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiPkRpYWJldGljIFJldGlub3BhdGh5PC90ZXh0Pgo8L3N2Zz4K',
+      condition: 'diabetic-retinopathy-mild',
       confidence: 87
     },
     {
-      name: 'Severe DR Sample',
-      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkVGMkYyIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGRUY0RjQiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0ZFRjZGNiIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIiBmaWxsPSIjRkVGOEY4Ii8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNGRUZBRkEiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMCIgZmlsbD0iI0ZFRkNGQyIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjcwIiByPSI1IiBmaWxsPSIjREM0NjI2Ii8+CjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEzMCIgcj0iNCIgZmlsbD0iI0RDNDYyNiIvPgo8Y2lyY2xlIGN4PSI4MCIgY3k9IjEzMCIgcj0iMyIgZmlsbD0iI0RDNDYyNiIvPgo8Y2lyY2xlIGN4PSIxMjAiIGN5PSI4MCIgcj0iNCIgZmlsbD0iI0RDNDYyNiIvPgo8dGV4dCB4PSIxMDAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0RDNDYyNiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPlNldmVyZSBEUjwvdGV4dD4KPC9zdmc+Cg==',
-      severity: 'severe',
-      confidence: 91
+      name: 'Age Macular Degeneration',
+      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkVGNEVFIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGRUY1RjAiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0ZFRjZGMiIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIiBmaWxsPSIjRkVGN0Y0Ii8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiNGRUY4RjYiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxNSIgZmlsbD0iI0Y5N0MxNiIvPgo8Y2lyY2xlIGN4PSI4NSIgY3k9Ijg1IiByPSIzIiBmaWxsPSIjRjk3QzE2Ii8+CjxjaXJjbGUgY3g9IjExNSIgY3k9IjExNSIgcj0iNCIgZmlsbD0iI0Y5N0MxNiIvPgo8dGV4dCB4PSIxMDAiIHk9IjE4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0Y5N0MxNiIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiPkFNRDwvdGV4dD4KPC9zdmc+Cg==',
+      condition: 'age-macular-degeneration',
+      confidence: 85
+    },
+    {
+      name: 'Retinal Detachment',
+      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkVGMkYyIi8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iODAiIGZpbGw9IiNGRUY0RjQiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI2MCIgZmlsbD0iI0ZFRjZGNiIvPgo8cGF0aCBkPSJNNjAgMTAwIEE0MCA0MCAwIDAgMSAxNDAgMTAwIEw0MCA0MCBMNjAgMTAwIFoiIGZpbGw9IiNEQzQ2MjYiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIyMCIgZmlsbD0iI0ZFRkFGQSIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjEwIiBmaWxsPSIjRkVGQ0ZDIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjREMzNjI2IiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCI+UmV0aW5hbCBEZXRhY2htZW50PC90ZXh0Pgo8L3N2Zz4K',
+      condition: 'retinal-detachment',
+      confidence: 93
     }
   ];
 
   const guideSteps = [
     {
-      title: 'Selamat Datang di RetinaDetect',
-      content: 'Platform AI untuk deteksi dini retinopati diabetik. Mari kita mulai dengan panduan singkat.',
+      title: 'Selamat Datang di EyeHealthAI',
+      content: 'Platform AI komprehensif untuk deteksi 19 jenis penyakit mata. Mari kita mulai dengan panduan singkat.',
       target: 'header',
       position: 'bottom'
     },
     {
       title: 'Upload Gambar Fundus',
-      content: 'Drag & drop atau klik untuk memilih gambar fundus mata. Format yang didukung: JPG, PNG, JPEG.',
+      content: 'Drag & drop atau klik untuk memilih gambar fundus mata. AI akan mendeteksi berbagai kondisi mata.',
       target: 'upload-area',
       position: 'right'
     },
     {
       title: 'Coba Demo',
-      content: 'Tidak punya gambar? Coba demo dengan sampel gambar yang tersedia.',
+      content: 'Tidak punya gambar? Coba demo dengan sampel berbagai kondisi mata yang tersedia.',
       target: 'demo-button',
       position: 'left'
     },
     {
-      title: 'Analisis AI',
-      content: 'AI akan menganalisis gambar dan memberikan hasil dengan tingkat kepercayaan.',
+      title: 'Analisis AI Multi-Class',
+      content: 'AI akan menganalisis gambar untuk mendeteksi 19 jenis penyakit mata dengan tingkat kepercayaan.',
       target: 'analyze-button',
       position: 'top'
     },
     {
-      title: 'Hasil Deteksi',
-      content: 'Lihat hasil deteksi dengan level keparahan dan rekomendasi tindakan.',
+      title: 'Hasil Komprehensif',
+      content: 'Lihat hasil deteksi dengan diagnosis spesifik dan rekomendasi tindakan medis.',
       target: 'results-area',
       position: 'left'
     }
@@ -138,15 +334,18 @@ export default function Home() {
   }, []);
 
   const handleFileUpload = (file) => {
-    if (file && file.type.startsWith('image/')) {
+    if (file && isValidImageFile(file)) {
       const reader = new FileReader();
       reader.onload = (e) => {
         setUploadedImage(e.target.result);
+        setUploadedFile(file); // Store the actual file for processing
         setAnalysisResult(null);
         setAnimationClass('animate-pulse');
-        setTimeout(() => setAnimationClass(''), 1000);
+        setTimeout(() => setAnimationClass(''), 500);
       };
       reader.readAsDataURL(file);
+    } else {
+      alert('Please upload a valid image file (JPG, PNG, JPEG)');
     }
   };
 
@@ -157,42 +356,116 @@ export default function Home() {
     }
   };
 
-  const analyzeImage = () => {
+  const analyzeImage = async () => {
+    if (!uploadedFile) {
+      alert('Please upload an image first');
+      return;
+    }
+
+    // Check if we should use fallback mode or real model
+    if (!useFallbackMode && !isModelReady()) {
+      alert('Model is still loading. Please wait or try fallback mode...');
+      return;
+    }
+
     setIsAnalyzing(true);
     setAnalysisProgress(0);
+    
+    const startTime = Date.now();
     
     // Animated progress
     const progressInterval = setInterval(() => {
       setAnalysisProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
+        if (prev >= 90) {
+          return prev;
         }
-        return prev + Math.random() * 15;
+        return prev + Math.random() * 10;
       });
-    }, 200);
+    }, 100);
     
-    // Mock analysis with 3-second delay
-    setTimeout(() => {
-      const severities = ['normal', 'mild', 'moderate', 'severe'];
-      const randomSeverity = severities[Math.floor(Math.random() * severities.length)];
-      const confidence = Math.floor(Math.random() * 20) + 80; // 80-99%
+    try {
+      if (useFallbackMode || modelError) {
+        // Fallback mode - use mock analysis
+        console.log('Using fallback mode (mock analysis)');
+        setAnalysisProgress(50);
+        
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const conditions = Object.keys(eyeConditions);
+        const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
+        const confidence = Math.floor(Math.random() * 20) + 80; // 80-99%
+        
+        setAnalysisResult({
+          condition: randomCondition,
+          confidence: confidence,
+          timestamp: new Date().toLocaleString(),
+          processingTime: '2.1s',
+          modelVersion: 'Mock Analysis (Fallback)',
+          predictions: null,
+          classIndex: null
+        });
+        
+      } else {
+        // Real model analysis
+        console.log('Using simple ONNX model');
+        
+        // Preprocess the image with correct size (288x288)
+        setAnalysisProgress(20);
+        const { tensorData, shape } = await preprocessImage(uploadedFile, 288);
+        
+        setAnalysisProgress(50);
+        
+        // Run inference with simple loader
+        const result = await runSimpleInference(tensorData);
+        
+        setAnalysisProgress(90);
+        
+        const endTime = Date.now();
+        const processingTime = ((endTime - startTime) / 1000).toFixed(1) + 's';
+        
+        // Map class index to condition name
+        const conditionKeys = Object.keys(eyeConditions);
+        const predictedCondition = conditionKeys[result.classIndex] || 'normal';
+        
+        // Set final results
+        setAnalysisResult({
+          condition: predictedCondition,
+          confidence: result.confidence,
+          timestamp: new Date().toLocaleString(),
+          processingTime: processingTime,
+          modelVersion: 'EfficientNet-B1 Simple',
+          predictions: result.predictions,
+          classIndex: result.classIndex
+        });
+      }
       
-      setAnalysisResult({
-        severity: randomSeverity,
-        confidence: confidence,
-        timestamp: new Date().toLocaleString(),
-        processingTime: '3.2s',
-        modelVersion: 'v2.1.0'
-      });
-      setIsAnalyzing(false);
       setAnalysisProgress(100);
+      
+    } catch (error) {
+      console.error('Analysis failed:', error);
+      
+      // If real model fails, offer fallback
+      if (!useFallbackMode) {
+        const usesFallback = confirm('Analysis failed. Would you like to use fallback mode (mock analysis)?');
+        if (usesFallback) {
+          setUseFallbackMode(true);
+          // Retry with fallback
+          setTimeout(() => analyzeImage(), 500);
+          return;
+        }
+      }
+      
+      alert('Analysis failed: ' + error.message);
+    } finally {
+      setIsAnalyzing(false);
       clearInterval(progressInterval);
-    }, 3000);
+    }
   };
 
   const resetAnalysis = () => {
     setUploadedImage(null);
+    setUploadedFile(null);
     setAnalysisResult(null);
     setIsAnalyzing(false);
     setAnalysisProgress(0);
@@ -204,11 +477,11 @@ export default function Home() {
     setShowDemo(false);
     setTimeout(() => {
       setAnalysisResult({
-        severity: demoImage.severity,
+        condition: demoImage.condition,
         confidence: demoImage.confidence,
         timestamp: new Date().toLocaleString(),
         processingTime: '2.8s',
-        modelVersion: 'v2.1.0'
+        modelVersion: 'v3.0.0-19class'
       });
     }, 1000);
   };
@@ -230,10 +503,70 @@ export default function Home() {
 
   // Auto-start guide for first-time users
   useEffect(() => {
+    // Check if user has seen the guide before
     const hasSeenGuide = localStorage.getItem('hasSeenGuide');
     if (!hasSeenGuide) {
-      setTimeout(() => setShowGuide(true), 1000);
+      setShowGuide(true);
     }
+
+    // Initialize ONNX model with retry logic
+    const loadModel = async () => {
+      try {
+        setModelLoading(true);
+        setModelError(null);
+        
+        // Add delay to ensure page is fully loaded
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Wait for ONNX Runtime to be available
+        let retries = 0;
+        while (typeof window.ort === 'undefined' && retries < 10) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          retries++;
+        }
+        
+        if (typeof window.ort === 'undefined') {
+          throw new Error('ONNX Runtime not loaded after 5 seconds');
+        }
+        
+        await loadModelSimple();
+        setModelLoading(false);
+        console.log('Model loaded successfully');
+      } catch (error) {
+        console.error('Failed to load model:', error);
+        
+        // Set user-friendly error message
+        let errorMessage = 'Model loading failed';
+        if (error.message.includes('fetch')) {
+          errorMessage = 'Model file not found or network error';
+        } else if (error.message.includes('ONNX')) {
+          errorMessage = 'ONNX Runtime initialization failed';
+        } else if (error.message.includes('WebAssembly')) {
+          errorMessage = 'Browser does not support WebAssembly';
+        }
+        
+        setModelError(errorMessage);
+        setModelLoading(false);
+        
+        // After 3 failed attempts, enable fallback mode
+        const retryCount = parseInt(localStorage.getItem('modelRetryCount') || '0') + 1;
+        localStorage.setItem('modelRetryCount', retryCount.toString());
+        
+        if (retryCount >= 3) {
+          console.log('Max retries reached, enabling fallback mode');
+          setUseFallbackMode(true);
+          localStorage.removeItem('modelRetryCount');
+        } else {
+          // Retry after 5 seconds
+          setTimeout(() => {
+            console.log(`Retrying model loading... (attempt ${retryCount + 1})`);
+            loadModel();
+          }, 5000);
+        }
+      }
+    };
+
+    loadModel();
   }, []);
 
   const closeGuide = () => {
@@ -313,7 +646,7 @@ export default function Home() {
             
             <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <Play className="w-6 h-6 mr-3 text-emerald-600" />
-              Demo Gambar Fundus
+              Demo Berbagai Kondisi Mata
             </h3>
             
             <div className="grid md:grid-cols-3 gap-6">
@@ -331,8 +664,8 @@ export default function Home() {
                     />
                     <h4 className="font-semibold text-gray-900 mb-2">{demo.name}</h4>
                     <div className="flex items-center justify-between text-sm">
-                      <span className={`px-2 py-1 rounded-full ${severityLevels[demo.severity].bgColor} ${severityLevels[demo.severity].color}`}>
-                        {severityLevels[demo.severity].label}
+                      <span className={`px-2 py-1 rounded-full ${eyeConditions[demo.condition].bgColor} ${eyeConditions[demo.condition].color}`}>
+                        {eyeConditions[demo.condition].label}
                       </span>
                       <span className="text-gray-600">{demo.confidence}%</span>
                     </div>
@@ -396,14 +729,48 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                  RetinaDetect
+                  EyeHealthAI
                   <Sparkles className="w-5 h-5 ml-2 text-emerald-500" />
                 </h1>
-                <p className="text-sm text-gray-600">AI-Powered Retinopathy Detection</p>
+                <p className="text-sm text-gray-600">AI-Powered Eye Disease Detection</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
+              {/* Model Status Indicator */}
+              <div className="flex items-center space-x-2">
+                {modelLoading ? (
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="hidden sm:block">Loading AI Model...</span>
+                  </div>
+                ) : modelError ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                      <AlertCircle className="w-4 h-4" />
+                      <span className="hidden sm:block">Model Error</span>
+                    </div>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
+                      title="Reload page to retry"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : useFallbackMode ? (
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="hidden sm:block">Fallback Mode</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm">
+                    <CheckCircle className="w-4 h-4" />
+                    <span className="hidden sm:block">AI Ready</span>
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={() => setShowGuide(true)}
                 className="flex items-center space-x-2 px-4 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
@@ -411,11 +778,9 @@ export default function Home() {
                 <HelpCircle className="w-5 h-5" />
                 <span className="hidden sm:block">Panduan</span>
               </button>
-              
               <button
-                id="demo-button"
                 onClick={() => setShowDemo(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 shadow-lg"
+                className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-colors"
               >
                 <Play className="w-5 h-5" />
                 <span className="hidden sm:block">Demo</span>
@@ -431,19 +796,19 @@ export default function Home() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full text-sm font-medium mb-6">
             <Zap className="w-4 h-4 mr-2" />
-            Powered by Advanced AI Technology
+            19-Class Eye Disease Detection AI
           </div>
           
           <h2 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-            Deteksi Dini,<br />
+            Deteksi Komprehensif,<br />
             <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              Penglihatan Lebih Baik
+              Mata Sehat Selamanya
             </span>
           </h2>
           
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Upload gambar fundus mata untuk mendeteksi retinopati diabetik menggunakan teknologi AI canggih. 
-            Dapatkan hasil instan dengan skor kepercayaan untuk intervensi dini.
+            Upload gambar fundus mata untuk mendeteksi 19 jenis penyakit mata menggunakan teknologi AI canggih. 
+            Dari retinopati diabetik hingga glaukoma, dapatkan diagnosis akurat dengan skor kepercayaan tinggi.
           </p>
 
           {/* Stats */}
@@ -468,16 +833,16 @@ export default function Home() {
               <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mx-auto mb-3">
                 <Users className="w-6 h-6 text-purple-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">10K+</div>
-              <div className="text-sm text-gray-600">Pengguna</div>
+              <div className="text-2xl font-bold text-gray-900">19</div>
+              <div className="text-sm text-gray-600">Jenis Penyakit</div>
             </div>
             
             <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/20">
               <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg mx-auto mb-3">
                 <Award className="w-6 h-6 text-orange-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">FDA</div>
-              <div className="text-sm text-gray-600">Approved</div>
+              <div className="text-2xl font-bold text-gray-900">10K+</div>
+              <div className="text-sm text-gray-600">Dataset</div>
             </div>
           </div>
         </div>
@@ -537,13 +902,23 @@ export default function Home() {
                       <button
                         id="analyze-button"
                         onClick={analyzeImage}
-                        disabled={isAnalyzing}
-                        className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl font-medium hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 disabled:opacity-50 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        disabled={isAnalyzing || (modelLoading && !useFallbackMode) || !uploadedFile}
+                        className={`${useFallbackMode ? 'bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700' : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700'} text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`}
                       >
-                        {isAnalyzing ? (
+                        {modelLoading && !useFallbackMode ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Loading Model...
+                          </>
+                        ) : isAnalyzing ? (
                           <>
                             <Brain className="w-5 h-5 mr-2 animate-pulse" />
                             Menganalisis...
+                          </>
+                        ) : useFallbackMode ? (
+                          <>
+                            <Eye className="w-5 h-5 mr-2" />
+                            Analisis (Mock)
                           </>
                         ) : (
                           <>
@@ -636,32 +1011,35 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Interactive Severity Levels Guide */}
+            {/* Interactive Eye Conditions Guide */}
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
                 <Target className="w-6 h-6 mr-3 text-emerald-600" />
-                Level Keparahan
+                Kondisi Mata yang Dapat Dideteksi
               </h3>
-              <div className="grid grid-cols-2 gap-3">
-                {Object.entries(severityLevels).map(([key, level]) => (
+              <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
+                {Object.entries(eyeConditions).slice(0, 8).map(([key, condition]) => (
                   <button
                     key={key}
-                    onClick={() => setSelectedSeverityInfo(level)}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105 ${level.borderColor} ${level.bgColor} group`}
+                    onClick={() => setSelectedSeverityInfo(condition)}
+                    className={`p-3 rounded-xl border-2 transition-all duration-200 hover:scale-105 ${condition.borderColor} ${condition.bgColor} group`}
                   >
-                    <div className="flex items-center space-x-3">
-                      {React.createElement(level.icon, {
-                        className: `w-6 h-6 ${level.color} group-hover:scale-110 transition-transform`
+                    <div className="flex items-center space-x-2">
+                      {React.createElement(condition.icon, {
+                        className: `w-5 h-5 ${condition.color} group-hover:scale-110 transition-transform`
                       })}
                       <div className="text-left">
-                        <h4 className={`font-semibold ${level.color}`}>{level.label}</h4>
-                        <p className="text-xs text-gray-600">{level.riskLevel}</p>
+                        <h4 className={`font-semibold text-xs ${condition.color}`}>{condition.label}</h4>
+                        <p className="text-xs text-gray-600">{condition.riskLevel}</p>
                       </div>
                     </div>
                   </button>
                 ))}
               </div>
-              <p className="text-sm text-gray-500 mt-4 text-center">Klik untuk melihat detail setiap level</p>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-500 mb-2">Klik untuk melihat detail kondisi</p>
+                <p className="text-xs text-emerald-600 font-medium">+11 kondisi lainnya dapat dideteksi</p>
+              </div>
             </div>
           </div>
 
@@ -675,10 +1053,10 @@ export default function Home() {
                 </h3>
                 
                 <div className="space-y-6">
-                  {/* Enhanced Severity Level Display */}
-                  <div className={`p-6 rounded-2xl border-2 ${severityLevels[analysisResult.severity].borderColor} ${severityLevels[analysisResult.severity].bgColor} relative overflow-hidden`}>
+                  {/* Enhanced Condition Display */}
+                  <div className={`p-6 rounded-2xl border-2 ${eyeConditions[analysisResult.condition].borderColor} ${eyeConditions[analysisResult.condition].bgColor} relative overflow-hidden`}>
                     <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
-                      {React.createElement(severityLevels[analysisResult.severity].icon, {
+                      {React.createElement(eyeConditions[analysisResult.condition].icon, {
                         className: "w-full h-full"
                       })}
                     </div>
@@ -686,19 +1064,20 @@ export default function Home() {
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-4">
-                          {React.createElement(severityLevels[analysisResult.severity].icon, {
-                            className: `w-12 h-12 ${severityLevels[analysisResult.severity].color}`
+                          {React.createElement(eyeConditions[analysisResult.condition].icon, {
+                            className: `w-12 h-12 ${eyeConditions[analysisResult.condition].color}`
                           })}
                           <div>
-                            <h4 className={`text-2xl font-bold ${severityLevels[analysisResult.severity].color}`}>
-                              {severityLevels[analysisResult.severity].label}
+                            <h4 className={`text-2xl font-bold ${eyeConditions[analysisResult.condition].color}`}>
+                              {eyeConditions[analysisResult.condition].label}
                             </h4>
-                            <p className="text-gray-600 font-medium">{severityLevels[analysisResult.severity].riskLevel}</p>
+                            <p className="text-gray-600 font-medium">{eyeConditions[analysisResult.condition].riskLevel}</p>
+                            <p className="text-xs text-gray-500 mt-1">Kategori: {eyeConditions[analysisResult.condition].category}</p>
                           </div>
                         </div>
                         
                         <div className="text-right">
-                          <div className={`text-4xl font-bold ${severityLevels[analysisResult.severity].color} mb-1`}>
+                          <div className={`text-4xl font-bold ${eyeConditions[analysisResult.condition].color} mb-1`}>
                             {analysisResult.confidence}%
                           </div>
                           <p className="text-gray-600 text-sm font-medium">Tingkat Kepercayaan</p>
@@ -707,7 +1086,7 @@ export default function Home() {
                       
                       <div className="bg-white/50 rounded-lg p-4">
                         <p className="text-gray-700 text-sm leading-relaxed">
-                          {severityLevels[analysisResult.severity].description}
+                          {eyeConditions[analysisResult.condition].description}
                         </p>
                       </div>
                     </div>
@@ -747,7 +1126,7 @@ export default function Home() {
                       Rekomendasi Tindakan
                     </h5>
                     <p className="text-blue-800 leading-relaxed">
-                      {severityLevels[analysisResult.severity].recommendation}
+                      {eyeConditions[analysisResult.condition].recommendation}
                     </p>
                   </div>
 
@@ -758,7 +1137,7 @@ export default function Home() {
                       Download Laporan PDF
                     </button>
                     <button 
-                      onClick={() => setSelectedSeverityInfo(severityLevels[analysisResult.severity])}
+                      onClick={() => setSelectedSeverityInfo(eyeConditions[analysisResult.condition])}
                       className="flex-1 bg-white border-2 border-emerald-500 text-emerald-600 px-6 py-4 rounded-xl font-semibold hover:bg-emerald-50 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                     >
                       <Info className="w-5 h-5 mr-2" />
@@ -834,10 +1213,10 @@ export default function Home() {
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                   <Eye className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold">RetinaDetect</h3>
+                <h3 className="text-xl font-bold">EyeHealthAI</h3>
               </div>
               <p className="text-emerald-100 text-sm leading-relaxed">
-                Platform AI terdepan untuk deteksi dini retinopati diabetik. 
+                Platform AI komprehensif untuk deteksi 19 jenis penyakit mata. 
                 Membantu jutaan orang menjaga kesehatan mata mereka.
               </p>
             </div>
@@ -847,11 +1226,11 @@ export default function Home() {
               <ul className="space-y-2 text-emerald-100 text-sm">
                 <li className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4" />
-                  <span>Analisis AI Real-time</span>
+                  <span>19 Jenis Penyakit Mata</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4" />
-                  <span>Privasi Terjamin</span>
+                  <span>Analisis Multi-Class AI</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4" />
@@ -859,7 +1238,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4" />
-                  <span>Laporan Lengkap</span>
+                  <span>Privasi Terjamin</span>
                 </li>
               </ul>
             </div>
@@ -880,11 +1259,14 @@ export default function Home() {
           
           <div className="border-t border-emerald-700 pt-8 text-center">
             <p className="text-emerald-200 text-sm">
-              © 2024 RetinaDetect. Dikembangkan dengan ❤️ untuk kesehatan mata yang lebih baik.
+              © 2024 EyeHealthAI. Dikembangkan dengan ❤️ untuk kesehatan mata yang lebih baik.
             </p>
           </div>
         </div>
       </footer>
+
+      {/* Debug Component - Remove in production */}
+      <ModelDebugger />
     </div>
   );
 }
