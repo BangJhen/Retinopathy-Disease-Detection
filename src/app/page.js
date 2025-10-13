@@ -90,6 +90,36 @@ export default function Home() {
     setShowDemo(true);
   };
 
+  // Handle demo selection
+  const handleDemoSelect = async (demoImage) => {
+    setShowDemo(false);
+    setSelectedImage(null); // Clear selected image
+    setIsAnalyzing(true);
+    
+    try {
+      // Simulate analysis
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      setAnalysisResult({
+        condition: demoImage.condition,
+        confidence: demoImage.confidence,
+        processingTime: '1.8s'
+      });
+
+      // Scroll to results
+      setTimeout(() => {
+        document.getElementById('results-area')?.scrollIntoView({ 
+          behavior: 'smooth' 
+        });
+      }, 100);
+      
+    } catch (error) {
+      console.error('Demo analysis failed:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   // Handle condition click
   const handleConditionClick = (condition) => {
     setSelectedSeverityInfo(condition);
@@ -165,6 +195,73 @@ export default function Home() {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Demo Modal */}
+      {showDemo && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">Demo Berbagai Kondisi Mata</h3>
+              <button
+                onClick={() => setShowDemo(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <p className="text-gray-600 mb-6">
+              Pilih salah satu contoh gambar fundus untuk melihat bagaimana AI mendeteksi berbagai kondisi mata:
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {demoImages.map((demo) => {
+                const condition = eyeConditions[demo.condition];
+                return (
+                  <button
+                    key={demo.id}
+                    onClick={() => handleDemoSelect(demo)}
+                    disabled={isAnalyzing}
+                    className="p-4 border-2 border-gray-200 rounded-xl hover:border-emerald-300 hover:bg-emerald-50 transition-all duration-200 text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="flex items-center space-x-3 mb-3">
+                      {React.createElement(condition.icon, {
+                        className: `w-6 h-6 ${condition.color}`
+                      })}
+                      <h4 className="font-semibold text-gray-900">{demo.name}</h4>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{demo.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-xs px-2 py-1 rounded-full ${condition.bgColor} ${condition.color} font-medium`}>
+                        {condition.label}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {demo.confidence}% confidence
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <h5 className="font-semibold text-blue-900 mb-1">Demo Information</h5>
+                  <p className="text-sm text-blue-800">
+                    Ini adalah simulasi analisis menggunakan data contoh. Hasil yang ditampilkan adalah untuk tujuan demonstrasi dan tidak menggantikan konsultasi medis profesional.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
