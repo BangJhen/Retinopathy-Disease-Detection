@@ -1176,26 +1176,24 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom Row - Eye Conditions and Privacy */}
-        <div className="grid lg:grid-cols-2 gap-8">
-        {/* Eye Conditions Guide */}
+        {/* Bottom Row - Eye Conditions (Full Width) */}
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
           <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
             <Target className="w-6 h-6 mr-3 text-emerald-600" />
             Detectable Eye Conditions
           </h3>
-          <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
-            {Object.entries(eyeConditions).slice(0, 8).map(([key, condition]) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            {Object.entries(eyeConditions).map(([key, condition]) => (
               <button
                 key={key}
                 onClick={() => setSelectedSeverityInfo(condition)}
                 className={`p-3 rounded-xl border-2 transition-all duration-200 hover:scale-105 ${condition.borderColor} ${condition.bgColor} group`}
               >
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col items-center space-y-2">
                   {React.createElement(condition.icon, {
-                    className: `w-5 h-5 ${condition.color} group-hover:scale-110 transition-transform`
+                    className: `w-6 h-6 ${condition.color} group-hover:scale-110 transition-transform`
                   })}
-                  <div className="text-left">
+                  <div className="text-center">
                     <h4 className={`font-semibold text-xs ${condition.color}`}>{condition.label}</h4>
                     <p className="text-xs text-gray-600">{condition.riskLevel}</p>
                   </div>
@@ -1203,52 +1201,11 @@ export default function Home() {
               </button>
             ))}
           </div>
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-500 mb-2">Click to view condition details</p>
-            <p className="text-xs text-emerald-600 font-medium">+11 other conditions can be detected</p>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500 mb-2">Click on any condition to view detailed information</p>
+            <p className="text-xs text-emerald-600 font-medium">All 19 eye disease types are detectable with our AI model</p>
           </div>
         </div>
-
-        {/* Privacy & Security Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <Shield className="w-6 h-6 mr-3 text-blue-600" />
-            Privacy & Security
-          </h3>
-          
-          <div className="space-y-4">
-            <div className="flex items-start space-x-3 group">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Shield className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-1">No Upload Required</h4>
-                <p className="text-sm text-gray-600">Images are not sent to external servers</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start space-x-3 group">
-              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Star className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-1">Private Data</h4>
-                <p className="text-sm text-gray-600">Your data remains completely private</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start space-x-3 group">
-              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Zap className="w-5 h-5 text-orange-600" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-1">Advanced Technology</h4>
-                <p className="text-sm text-gray-600">Latest AI model for maximum accuracy</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       </main>
 
       {/* Ultra Minimalist Footer */}
