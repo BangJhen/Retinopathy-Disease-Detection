@@ -800,15 +800,15 @@ export default function Home() {
           </div>
           
           <h2 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-            Deteksi Komprehensif,<br />
+            Comprehensive Detection,<br />
             <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              Mata Sehat Selamanya
+              Healthy Eyes Forever
             </span>
           </h2>
           
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Upload gambar fundus mata untuk mendeteksi 19 jenis penyakit mata menggunakan teknologi AI canggih. 
-            Dari retinopati diabetik hingga glaukoma, dapatkan diagnosis akurat dengan skor kepercayaan tinggi.
+            Upload fundus images to detect 19 types of eye diseases using advanced AI technology. 
+            From diabetic retinopathy to glaucoma, get accurate diagnosis with high confidence scores.
           </p>
 
           {/* Stats */}
@@ -818,7 +818,7 @@ export default function Home() {
                 <Target className="w-6 h-6 text-emerald-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">95%</div>
-              <div className="text-sm text-gray-600">Akurasi</div>
+              <div className="text-sm text-gray-600">Accuracy</div>
             </div>
             
             <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/20">
@@ -826,7 +826,7 @@ export default function Home() {
                 <Clock className="w-6 h-6 text-blue-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">3s</div>
-              <div className="text-sm text-gray-600">Analisis</div>
+              <div className="text-sm text-gray-600">Analysis</div>
             </div>
             
             <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/20">
@@ -834,7 +834,7 @@ export default function Home() {
                 <Users className="w-6 h-6 text-purple-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">19</div>
-              <div className="text-sm text-gray-600">Jenis Penyakit</div>
+              <div className="text-sm text-gray-600">Disease Types</div>
             </div>
             
             <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/20">
@@ -842,18 +842,19 @@ export default function Home() {
                 <Award className="w-6 h-6 text-orange-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">10K+</div>
-              <div className="text-sm text-gray-600">Dataset</div>
+              <div className="text-sm text-gray-600">Training Images</div>
             </div>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        {/* Upload and How It Works Section */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-8">
           {/* Upload Section */}
-          <div className="space-y-6">
+          <div>
             <div className={`bg-white rounded-2xl shadow-xl p-6 border-2 transition-all duration-300 ${animationClass} ${uploadedImage ? 'border-emerald-200' : 'border-gray-100'}`}>
               <h3 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
                 <Upload className="w-6 h-6 mr-3 text-emerald-600" />
-                Upload Gambar Fundus
+                Upload Fundus Image
                 {uploadedImage && <CheckCircle className="w-5 h-5 ml-2 text-emerald-500" />}
               </h3>
               
@@ -882,7 +883,7 @@ export default function Home() {
                         <div className="absolute inset-0 bg-black/20 rounded-xl flex items-center justify-center">
                           <div className="bg-white rounded-lg p-4 shadow-lg">
                             <Loader2 className="w-8 h-8 text-emerald-600 animate-spin mx-auto mb-2" />
-                            <p className="text-sm text-gray-600">Menganalisis...</p>
+                            <p className="text-sm text-gray-600">Analyzing...</p>
                           </div>
                         </div>
                       )}
@@ -913,17 +914,17 @@ export default function Home() {
                         ) : isAnalyzing ? (
                           <>
                             <Brain className="w-5 h-5 mr-2 animate-pulse" />
-                            Menganalisis...
+                            Analyzing...
                           </>
                         ) : useFallbackMode ? (
                           <>
                             <Eye className="w-5 h-5 mr-2" />
-                            Analisis (Mock)
+                            Analysis (Mock)
                           </>
                         ) : (
                           <>
                             <Eye className="w-5 h-5 mr-2" />
-                            Analisis Gambar
+                            Analyze Image
                           </>
                         )}
                       </button>
@@ -946,12 +947,12 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-xl font-semibold text-gray-700 mb-2">
-                        Drag & drop gambar fundus di sini
+                        Drag & drop fundus image here
                       </p>
-                      <p className="text-gray-500 mb-6">atau klik tombol di bawah</p>
+                      <p className="text-gray-500 mb-6">or click the button below</p>
                       <label className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-xl font-medium hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 cursor-pointer inline-flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                         <Upload className="w-5 h-5 mr-2" />
-                        Pilih Gambar
+                        Select Image
                         <input
                           type="file"
                           accept="image/*"
@@ -961,27 +962,29 @@ export default function Home() {
                       </label>
                     </div>
                     <div className="bg-blue-50 rounded-lg p-4">
-                      <p className="text-sm text-blue-800 font-medium mb-1">Format yang didukung:</p>
-                      <p className="text-sm text-blue-600">JPG, PNG, JPEG (Maksimal 10MB)</p>
+                      <p className="text-sm text-blue-800 font-medium mb-1">Supported formats:</p>
+                      <p className="text-sm text-blue-600">JPG, PNG, JPEG (Maximum 10MB)</p>
                     </div>
                   </div>
                 )}
               </div>
             </div>
+          </div>
 
-            {/* Interactive How It Works */}
+          {/* How It Works Section */}
+          <div>
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
                 <Info className="w-6 h-6 mr-3 text-emerald-600" />
-                Cara Kerja Platform
+                How It Works
               </h3>
               <div className="space-y-6">
                 <div className="group hover:bg-emerald-50 p-4 rounded-xl transition-all duration-200 cursor-pointer">
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">1</div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">Upload Gambar</h4>
-                      <p className="text-gray-600 text-sm">Upload foto fundus mata berkualitas tinggi dalam format JPG, PNG, atau JPEG</p>
+                      <h4 className="font-semibold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">Upload Image</h4>
+                      <p className="text-gray-600 text-sm">Upload high-quality fundus photos in JPG, PNG, or JPEG format</p>
                     </div>
                     <Upload className="w-5 h-5 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
@@ -991,8 +994,8 @@ export default function Home() {
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">2</div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">Analisis AI</h4>
-                      <p className="text-gray-600 text-sm">AI menganalisis gambar untuk mendeteksi tanda-tanda retinopati diabetik</p>
+                      <h4 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">AI Analysis</h4>
+                      <p className="text-gray-600 text-sm">AI analyzes the image to detect signs of 19 different eye diseases</p>
                     </div>
                     <Brain className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
@@ -1002,49 +1005,19 @@ export default function Home() {
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">3</div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">Hasil Instan</h4>
-                      <p className="text-gray-600 text-sm">Dapatkan hasil deteksi dengan skor kepercayaan dan rekomendasi tindakan</p>
+                      <h4 className="font-semibold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">Instant Results</h4>
+                      <p className="text-gray-600 text-sm">Get detection results with confidence scores and recommended actions</p>
                     </div>
                     <Activity className="w-5 h-5 text-purple-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Interactive Eye Conditions Guide */}
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                <Target className="w-6 h-6 mr-3 text-emerald-600" />
-                Kondisi Mata yang Dapat Dideteksi
-              </h3>
-              <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
-                {Object.entries(eyeConditions).slice(0, 8).map(([key, condition]) => (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedSeverityInfo(condition)}
-                    className={`p-3 rounded-xl border-2 transition-all duration-200 hover:scale-105 ${condition.borderColor} ${condition.bgColor} group`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      {React.createElement(condition.icon, {
-                        className: `w-5 h-5 ${condition.color} group-hover:scale-110 transition-transform`
-                      })}
-                      <div className="text-left">
-                        <h4 className={`font-semibold text-xs ${condition.color}`}>{condition.label}</h4>
-                        <p className="text-xs text-gray-600">{condition.riskLevel}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-500 mb-2">Klik untuk melihat detail kondisi</p>
-                <p className="text-xs text-emerald-600 font-medium">+11 kondisi lainnya dapat dideteksi</p>
-              </div>
-            </div>
           </div>
+        </div>
 
-          {/* Enhanced Results Section */}
-          <div id="results-area" className="space-y-6">
+        {/* Analysis Results Section - Full Width First */}
+        <div id="results-area" className="space-y-6 mb-8">
             {analysisResult && (
               <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 animate-in slide-in-from-right-4">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
@@ -1199,74 +1172,124 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+            
+          </div>
+        </div>
+
+        {/* Bottom Row - Eye Conditions and Privacy */}
+        <div className="grid lg:grid-cols-2 gap-8">
+        {/* Eye Conditions Guide */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <Target className="w-6 h-6 mr-3 text-emerald-600" />
+            Detectable Eye Conditions
+          </h3>
+          <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
+            {Object.entries(eyeConditions).slice(0, 8).map(([key, condition]) => (
+              <button
+                key={key}
+                onClick={() => setSelectedSeverityInfo(condition)}
+                className={`p-3 rounded-xl border-2 transition-all duration-200 hover:scale-105 ${condition.borderColor} ${condition.bgColor} group`}
+              >
+                <div className="flex items-center space-x-2">
+                  {React.createElement(condition.icon, {
+                    className: `w-5 h-5 ${condition.color} group-hover:scale-110 transition-transform`
+                  })}
+                  <div className="text-left">
+                    <h4 className={`font-semibold text-xs ${condition.color}`}>{condition.label}</h4>
+                    <p className="text-xs text-gray-600">{condition.riskLevel}</p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-500 mb-2">Click to view condition details</p>
+            <p className="text-xs text-emerald-600 font-medium">+11 other conditions can be detected</p>
+          </div>
+        </div>
+
+        {/* Privacy & Security Section */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <Shield className="w-6 h-6 mr-3 text-blue-600" />
+            Privacy & Security
+          </h3>
+          
+          <div className="space-y-4">
+            <div className="flex items-start space-x-3 group">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Shield className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-1">No Upload Required</h4>
+                <p className="text-sm text-gray-600">Images are not sent to external servers</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-3 group">
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Star className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-1">Private Data</h4>
+                <p className="text-sm text-gray-600">Your data remains completely private</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-3 group">
+              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Zap className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-1">Advanced Technology</h4>
+                <p className="text-sm text-gray-600">Latest AI model for maximum accuracy</p>
+              </div>
             </div>
           </div>
         </div>
+      </div>
       </main>
 
-      {/* Enhanced Footer */}
-      <footer className="bg-gradient-to-r from-emerald-900 to-teal-900 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                  <Eye className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold">EyeHealthAI</h3>
+      {/* Ultra Minimalist Footer */}
+      <footer className="border-t border-gray-100 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+            {/* Brand */}
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 bg-gradient-to-r from-emerald-500 to-teal-600 rounded flex items-center justify-center">
+                <Eye className="w-4 h-4 text-white" />
               </div>
-              <p className="text-emerald-100 text-sm leading-relaxed">
-                Platform AI komprehensif untuk deteksi 19 jenis penyakit mata. 
-                Membantu jutaan orang menjaga kesehatan mata mereka.
-              </p>
+              <span className="font-semibold text-gray-900">EyeHealthAI</span>
+              <span className="text-xs text-gray-500">•</span>
+              <span className="text-xs text-gray-500">AI Eye Disease Detection</span>
             </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Fitur Utama</h4>
-              <ul className="space-y-2 text-emerald-100 text-sm">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4" />
-                  <span>19 Jenis Penyakit Mata</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Analisis Multi-Class AI</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Akurasi 95%+</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Privasi Terjamin</span>
-                </li>
-              </ul>
+
+            {/* Stats */}
+            <div className="flex items-center space-x-4 text-xs text-gray-500">
+              <span><span className="font-medium text-emerald-600">19</span> Types</span>
+              <span><span className="font-medium text-blue-600">95%</span> Accuracy</span>
+              <span><span className="font-medium text-purple-600">3s</span> Analysis</span>
             </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Penting</h4>
-              <div className="bg-white/10 rounded-lg p-4">
-                <div className="flex items-start space-x-2">
-                  <AlertCircle className="w-5 h-5 text-yellow-300 mt-0.5" />
-                  <p className="text-emerald-100 text-sm leading-relaxed">
-                    Tool ini hanya untuk skrining awal. Selalu konsultasikan dengan dokter spesialis mata 
-                    untuk diagnosis dan perawatan yang tepat.
-                  </p>
-                </div>
-              </div>
+
+            {/* Copyright & Disclaimer */}
+            <div className="flex items-center space-x-3 text-xs text-gray-500">
+              <span>© 2024</span>
+              <span className="flex items-center space-x-1">
+                <AlertCircle className="w-3 h-3 text-amber-500" />
+                <span>For screening only</span>
+              </span>
+              <span className="flex items-center space-x-1">
+                <Shield className="w-3 h-3" />
+                <span>Privacy first</span>
+              </span>
             </div>
-          </div>
-          
-          <div className="border-t border-emerald-700 pt-8 text-center">
-            <p className="text-emerald-200 text-sm">
-              © 2024 EyeHealthAI. Dikembangkan dengan ❤️ untuk kesehatan mata yang lebih baik.
-            </p>
           </div>
         </div>
       </footer>
 
       {/* Debug Component - Remove in production */}
-      <ModelDebugger />
+      {/* <ModelDebugger /> */}
     </div>
   );
 }
