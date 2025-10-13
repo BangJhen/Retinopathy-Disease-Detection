@@ -1,0 +1,233 @@
+import { 
+  Eye, 
+  AlertTriangle, 
+  Activity, 
+  Zap, 
+  Shield, 
+  Target, 
+  Heart, 
+  Brain, 
+  Droplets, 
+  Sun, 
+  Moon, 
+  Star, 
+  Circle, 
+  Square, 
+  Triangle, 
+  Hexagon, 
+  Diamond, 
+  Plus, 
+  Minus 
+} from 'lucide-react';
+
+export const eyeConditions = {
+  'normal': {
+    label: 'Normal',
+    icon: Eye,
+    color: 'text-green-600',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
+    description: 'Healthy eye condition with no signs of disease or abnormalities.',
+    recommendation: 'Continue regular eye check-ups and maintain good eye health practices.',
+    riskLevel: 'No Risk',
+    category: 'healthy'
+  },
+  'macular-scar': {
+    label: 'Macular Scar',
+    icon: Target,
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-200',
+    description: 'Scar tissue formation on the macula that can affect central vision.',
+    recommendation: 'Consult an ophthalmologist for evaluation and monitoring of vision changes.',
+    riskLevel: 'Moderate',
+    category: 'retinal'
+  },
+  'pterygium': {
+    label: 'Pterygium',
+    icon: Triangle,
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-50',
+    borderColor: 'border-yellow-200',
+    description: 'Growth of conjunctival tissue over the cornea, often due to UV exposure.',
+    recommendation: 'Use UV protection and consult an eye specialist if vision is affected.',
+    riskLevel: 'Low',
+    category: 'surface'
+  },
+  'disc-edema': {
+    label: 'Disc Edema',
+    icon: Circle,
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
+    description: 'Swelling of the optic disc, which may indicate increased intracranial pressure.',
+    recommendation: 'Immediate medical evaluation required to determine underlying cause.',
+    riskLevel: 'High',
+    category: 'optic'
+  },
+  'branch-retinal-vein-occlusion': {
+    label: 'Branch RVO',
+    icon: Activity,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    borderColor: 'border-purple-200',
+    description: 'Blockage of a branch retinal vein causing vision problems.',
+    recommendation: 'Urgent ophthalmologic consultation and possible anti-VEGF treatment.',
+    riskLevel: 'High',
+    category: 'vascular'
+  },
+  'central-serous-chorioretinopathy': {
+    label: 'CSC',
+    icon: Droplets,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+    description: 'Fluid accumulation under the retina causing central vision distortion.',
+    recommendation: 'Monitor closely and consider treatment if persistent or recurrent.',
+    riskLevel: 'Moderate',
+    category: 'retinal'
+  },
+  'drusen': {
+    label: 'Drusen',
+    icon: Star,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200',
+    description: 'Yellow deposits under the retina, early signs of macular degeneration.',
+    recommendation: 'Regular monitoring and lifestyle modifications to prevent progression.',
+    riskLevel: 'Low',
+    category: 'retinal'
+  },
+  'glaucoma': {
+    label: 'Glaucoma',
+    icon: Eye,
+    color: 'text-red-700',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-300',
+    description: 'Progressive optic nerve damage often associated with elevated eye pressure.',
+    recommendation: 'Immediate treatment required to prevent further vision loss.',
+    riskLevel: 'High',
+    category: 'optic'
+  },
+  'retinal-detachment': {
+    label: 'Retinal Detachment',
+    icon: AlertTriangle,
+    color: 'text-red-800',
+    bgColor: 'bg-red-100',
+    borderColor: 'border-red-400',
+    description: 'Emergency condition where the retina separates from underlying tissue.',
+    recommendation: 'EMERGENCY: Seek immediate medical attention for surgical repair.',
+    riskLevel: 'Critical',
+    category: 'retinal'
+  },
+  'diabetic-retinopathy-severe': {
+    label: 'Severe DR',
+    icon: Heart,
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
+    description: 'Advanced diabetic retinopathy with significant retinal damage.',
+    recommendation: 'Urgent treatment with anti-VEGF injections or laser therapy required.',
+    riskLevel: 'High',
+    category: 'diabetic'
+  },
+  'age-macular-degeneration': {
+    label: 'AMD',
+    icon: Sun,
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-300',
+    description: 'Age-related deterioration of the macula affecting central vision.',
+    recommendation: 'Regular monitoring and consider anti-VEGF treatment if wet form.',
+    riskLevel: 'Moderate',
+    category: 'retinal'
+  },
+  'cataract': {
+    label: 'Cataract',
+    icon: Moon,
+    color: 'text-gray-600',
+    bgColor: 'bg-gray-50',
+    borderColor: 'border-gray-200',
+    description: 'Clouding of the natural lens causing blurred or dim vision.',
+    recommendation: 'Consider cataract surgery when vision significantly impacts daily activities.',
+    riskLevel: 'Low',
+    category: 'lens'
+  },
+  'diabetic-retinopathy-mild': {
+    label: 'Mild DR',
+    icon: Heart,
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-50',
+    borderColor: 'border-yellow-200',
+    description: 'Early stage diabetic retinopathy with minimal retinal changes.',
+    recommendation: 'Optimize diabetes control and schedule regular eye examinations.',
+    riskLevel: 'Low',
+    category: 'diabetic'
+  },
+  'retinitis-pigmentosa': {
+    label: 'Retinitis Pigmentosa',
+    icon: Hexagon,
+    color: 'text-indigo-600',
+    bgColor: 'bg-indigo-50',
+    borderColor: 'border-indigo-200',
+    description: 'Genetic disorder causing progressive retinal degeneration.',
+    recommendation: 'Genetic counseling and low vision rehabilitation services.',
+    riskLevel: 'High',
+    category: 'genetic'
+  },
+  'macular-epiretinal-membrane': {
+    label: 'ERM',
+    icon: Square,
+    color: 'text-teal-600',
+    bgColor: 'bg-teal-50',
+    borderColor: 'border-teal-200',
+    description: 'Thin membrane formation over the macula causing vision distortion.',
+    recommendation: 'Monitor for progression; surgery may be needed if vision worsens.',
+    riskLevel: 'Moderate',
+    category: 'retinal'
+  },
+  'myopia': {
+    label: 'High Myopia',
+    icon: Target,
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-300',
+    description: 'High degree of nearsightedness with fundus changes.',
+    recommendation: 'Regular monitoring for myopic complications like retinal detachment.',
+    riskLevel: 'Moderate',
+    category: 'refractive'
+  },
+  'diabetic-retinopathy-proliferative': {
+    label: 'Proliferative DR',
+    icon: Zap,
+    color: 'text-red-700',
+    bgColor: 'bg-red-100',
+    borderColor: 'border-red-300',
+    description: 'Most severe form of diabetic retinopathy with new blood vessel growth.',
+    recommendation: 'Immediate pan-retinal photocoagulation or anti-VEGF treatment required.',
+    riskLevel: 'Critical',
+    category: 'diabetic'
+  },
+  'refractive-media-opacity': {
+    label: 'Media Opacity',
+    icon: Shield,
+    color: 'text-gray-700',
+    bgColor: 'bg-gray-50',
+    borderColor: 'border-gray-300',
+    description: 'Opacity in the eye\'s refractive media affecting image clarity.',
+    recommendation: 'Identify and treat underlying cause of media opacity.',
+    riskLevel: 'Moderate',
+    category: 'media'
+  },
+  'macular-hole': {
+    label: 'Macular Hole',
+    icon: Circle,
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-300',
+    description: 'Small hole in the center of the macula affecting central vision.',
+    recommendation: 'Surgical repair (vitrectomy) usually recommended for better outcomes.',
+    riskLevel: 'Moderate',
+    category: 'retinal'
+  }
+};
