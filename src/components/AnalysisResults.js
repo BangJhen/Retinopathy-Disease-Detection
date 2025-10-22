@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Star, Download, Info, Shield, Zap } from 'lucide-react';
+import { Star, Info, Shield, Zap } from 'lucide-react';
 
 export default function AnalysisResults({ 
   analysisResult, 
@@ -16,8 +16,8 @@ export default function AnalysisResults({
     <div id="results-area" className="space-y-6 mb-8">
       <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 animate-in slide-in-from-right-4">
         <h3 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-          <Star className="w-6 h-6 mr-3 text-emerald-600" />
-          Hasil Analisis
+          <Star className="w-6 h-6 mr-3 text-blue-600" />
+          Analysis Results
         </h3>
         
         <div className="space-y-6">
@@ -61,17 +61,6 @@ export default function AnalysisResults({
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-              <Download className="w-4 h-4" />
-              <span>Download Report</span>
-            </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-              <Info className="w-4 h-4" />
-              <span>Learn More</span>
-            </button>
-          </div>
 
           {/* Analysis Details */}
           <div className="grid md:grid-cols-2 gap-6">
@@ -107,8 +96,8 @@ export default function AnalysisResults({
                     <Shield className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Data Aman</h4>
-                    <p className="text-sm text-gray-600">Gambar tidak dikirim ke server eksternal</p>
+                    <h4 className="font-semibold text-gray-900 mb-1">Secure Data</h4>
+                    <p className="text-sm text-gray-600">Images are not sent to external servers</p>
                   </div>
                 </div>
                 
@@ -117,8 +106,8 @@ export default function AnalysisResults({
                     <Star className="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Privasi Terjaga</h4>
-                    <p className="text-sm text-gray-600">Semua analisis dilakukan di browser Anda</p>
+                    <h4 className="font-semibold text-gray-900 mb-1">Privacy Protected</h4>
+                    <p className="text-sm text-gray-600">All analysis performed in your browser</p>
                   </div>
                 </div>
                 
@@ -127,8 +116,8 @@ export default function AnalysisResults({
                     <Zap className="w-5 h-5 text-orange-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Teknologi Terdepan</h4>
-                    <p className="text-sm text-gray-600">AI model terbaru untuk akurasi maksimal</p>
+                    <h4 className="font-semibold text-gray-900 mb-1">Advanced Technology</h4>
+                    <p className="text-sm text-gray-600">Latest AI model for maximum accuracy</p>
                   </div>
                 </div>
               </div>

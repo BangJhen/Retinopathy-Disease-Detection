@@ -29,7 +29,7 @@ export default function Footer() {
             </div>
             <div className="flex items-center space-x-1">
               <Heart className="w-4 h-4 text-red-500" />
-              <span className="text-gray-700">95% Accuracy</span>
+              <span className="text-gray-700">90% Accuracy</span>
             </div>
             <div className="flex items-center space-x-1">
               <Shield className="w-4 h-4 text-green-500" />
