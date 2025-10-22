@@ -18,10 +18,10 @@ export default function Header({
 
   const getStatusText = () => {
     switch (modelStatus) {
-      case 'ready': return 'AI Ready';
-      case 'loading': return 'Loading AI...';
-      case 'error': return 'AI Error';
-      default: return 'Initializing...';
+      case 'ready': return 'AI Model Ready';
+      case 'loading': return 'Loading Neural Network...';
+      case 'error': return 'Model Unavailable';
+      default: return 'Initializing AI...';
     }
   };
 
@@ -39,7 +39,7 @@ export default function Header({
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">RetinaScan</h1>
-              <p className="text-xs text-gray-500">AI-Powered Retinal Analysis</p>
+              <p className="text-xs text-gray-500">Advanced Neural Retinal Diagnostics</p>
             </div>
           </div>
 
@@ -60,7 +60,7 @@ export default function Header({
               className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:from-blue-700 hover:to-indigo-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Play className="w-5 h-5" />
-              <span className="hidden sm:block">Demo</span>
+              <span className="hidden sm:block">Try Demo</span>
             </button>
           </div>
         </div>
