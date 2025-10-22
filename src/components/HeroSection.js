@@ -36,7 +36,7 @@ export default function HeroSection() {
       {/* Dynamic Animated Title */}
       <div className="relative mb-8">
         <h1 className="text-6xl md:text-7xl font-black text-gray-900 mb-4 leading-tight tracking-tight">
-          <span className="inline-block hover:scale-105 transition-transform duration-300">
+          <span className="inline-block transition-transform duration-300">
             The Future of
           </span>
           <br />
@@ -95,50 +95,46 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Enhanced Interactive Stats */}
+      {/* Simple Clean Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-12">
-        <div className="group bg-gradient-to-br from-white/80 to-blue-50/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2">
-          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl mx-auto mb-4 group-hover:animate-pulse shadow-lg">
-            <Eye className="w-7 h-7 text-white" />
+        <div className="text-center p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+          <div className="mb-4">
+            <div className="w-12 h-12 bg-blue-500 rounded-xl mx-auto flex items-center justify-center mb-3">
+              <Eye className="w-6 h-6 text-white" />
+            </div>
           </div>
-          <div className="text-3xl font-black text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">19</div>
-          <div className="text-sm font-medium text-gray-600 group-hover:text-gray-800">Disease Classes</div>
-          <div className="w-full bg-gray-200 rounded-full h-1 mt-3 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-1 rounded-full group-hover:animate-pulse" style={{width: '95%'}}></div>
-          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">19</div>
+          <div className="text-sm text-gray-600 font-medium">Disease Classes</div>
         </div>
         
-        <div className="group bg-gradient-to-br from-white/80 to-indigo-50/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2">
-          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl mx-auto mb-4 group-hover:animate-pulse shadow-lg">
-            <Target className="w-7 h-7 text-white" />
+        <div className="text-center p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+          <div className="mb-4">
+            <div className="w-12 h-12 bg-indigo-500 rounded-xl mx-auto flex items-center justify-center mb-3">
+              <Target className="w-6 h-6 text-white" />
+            </div>
           </div>
-          <div className="text-3xl font-black text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">95%</div>
-          <div className="text-sm font-medium text-gray-600 group-hover:text-gray-800">Clinical Accuracy</div>
-          <div className="w-full bg-gray-200 rounded-full h-1 mt-3 overflow-hidden">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-1 rounded-full group-hover:animate-pulse" style={{width: '95%'}}></div>
-          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">95%</div>
+          <div className="text-sm text-gray-600 font-medium">Clinical Accuracy</div>
         </div>
         
-        <div className="group bg-gradient-to-br from-white/80 to-purple-50/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2">
-          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mx-auto mb-4 group-hover:animate-pulse shadow-lg">
-            <Users className="w-7 h-7 text-white" />
+        <div className="text-center p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+          <div className="mb-4">
+            <div className="w-12 h-12 bg-purple-500 rounded-xl mx-auto flex items-center justify-center mb-3">
+              <Users className="w-6 h-6 text-white" />
+            </div>
           </div>
-          <div className="text-3xl font-black text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">10K+</div>
-          <div className="text-sm font-medium text-gray-600 group-hover:text-gray-800">Medical Images</div>
-          <div className="w-full bg-gray-200 rounded-full h-1 mt-3 overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-1 rounded-full group-hover:animate-pulse" style={{width: '88%'}}></div>
-          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">10K+</div>
+          <div className="text-sm text-gray-600 font-medium">Medical Images</div>
         </div>
         
-        <div className="group bg-gradient-to-br from-white/80 to-emerald-50/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2">
-          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl mx-auto mb-4 group-hover:animate-pulse shadow-lg">
-            <Clock className="w-7 h-7 text-white" />
+        <div className="text-center p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+          <div className="mb-4">
+            <div className="w-12 h-12 bg-emerald-500 rounded-xl mx-auto flex items-center justify-center mb-3">
+              <Clock className="w-6 h-6 text-white" />
+            </div>
           </div>
-          <div className="text-3xl font-black text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">&lt;3s</div>
-          <div className="text-sm font-medium text-gray-600 group-hover:text-gray-800">Instant Results</div>
-          <div className="w-full bg-gray-200 rounded-full h-1 mt-3 overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-1 rounded-full group-hover:animate-pulse" style={{width: '92%'}}></div>
-          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">&lt;3s</div>
+          <div className="text-sm text-gray-600 font-medium">Analysis Time</div>
         </div>
       </div>
     </div>

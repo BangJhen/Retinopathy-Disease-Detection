@@ -67,3 +67,38 @@
 .hover-glow:hover {
   box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
 }
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Interactive background optimizations */
+.interactive-bg {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Floating animation for particles */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  66% {
+    transform: translateY(5px) rotate(-1deg);
+  }
+}
+
+.float-gentle {
+  animation: float-gentle 6s ease-in-out infinite;
+}
+
+/* Parallax optimization */
+.parallax-element {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}

@@ -29,7 +29,7 @@ export default function Footer() {
 
           {/* Copyright & Disclaimer */}
           <div className="flex items-center space-x-3 text-xs text-gray-500">
-            <span>© 2024</span>
+            <span>© 2025</span>
             <span className="flex items-center space-x-1">
               <AlertCircle className="w-3 h-3 text-amber-500" />
               <span>For screening only</span>

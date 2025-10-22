@@ -11,6 +11,7 @@ import HowItWorks from '../components/HowItWorks';
 import AnalysisResults from '../components/AnalysisResults';
 import EyeConditions from '../components/EyeConditions';
 import Footer from '../components/Footer';
+import InteractiveBackground from '../components/InteractiveBackground';
 
 // Import utilities and data
 import { eyeConditions } from '../data/eyeConditions';
@@ -172,7 +173,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen relative">
+      {/* Interactive Background */}
+      <InteractiveBackground />
+      
+      <div className="relative z-10">
       {/* Header */}
       <Header 
         modelStatus={modelStatus}
@@ -311,6 +316,7 @@ export default function Home() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
