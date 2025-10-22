@@ -9,17 +9,20 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
           {/* Brand */}
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-emerald-500 to-teal-600 rounded flex items-center justify-center">
-              <Eye className="w-4 h-4 text-white" />
+            <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-indigo-700 rounded flex items-center justify-center relative">
+              <div className="w-3 h-3 border border-white rounded-full relative">
+                <div className="absolute inset-0.5 bg-white rounded-full opacity-80"></div>
+                <div className="absolute inset-1 bg-blue-600 rounded-full"></div>
+              </div>
             </div>
-            <span className="font-semibold text-gray-900">EyeHealthAI</span>
+            <span className="font-semibold text-gray-900">RetinaScan</span>
             <span className="text-xs text-gray-500">•</span>
-            <span className="text-xs text-gray-500">AI Eye Disease Detection</span>
+            <span className="text-xs text-gray-500">AI Retinal Analysis</span>
           </div>
 
           {/* Stats */}
           <div className="flex items-center space-x-4 text-xs text-gray-500">
-            <span><span className="font-medium text-emerald-600">19</span> Types</span>
+            <span><span className="font-medium text-blue-600">19</span> Conditions</span>
             <span><span className="font-medium text-blue-600">95%</span> Accuracy</span>
             <span><span className="font-medium text-purple-600">3s</span> Analysis</span>
           </div>

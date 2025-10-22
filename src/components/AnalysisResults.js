@@ -63,7 +63,7 @@ export default function AnalysisResults({
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors">
+            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
               <Download className="w-4 h-4" />
               <span>Download Report</span>
             </button>

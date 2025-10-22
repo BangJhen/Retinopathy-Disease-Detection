@@ -10,8 +10,8 @@ export default function EyeConditions({
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
       <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-        <Target className="w-6 h-6 mr-3 text-emerald-600" />
-        Detectable Eye Conditions
+        <Target className="w-6 h-6 mr-3 text-blue-600" />
+        Detectable Retinal Conditions
       </h3>
       
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
@@ -42,8 +42,8 @@ export default function EyeConditions({
         <p className="text-sm text-gray-500 mb-2">
           Click on any condition to view detailed information
         </p>
-        <p className="text-xs text-emerald-600 font-medium">
-          All 19 eye disease types are detectable with our AI model
+        <p className="text-xs text-blue-600 font-medium">
+          All 19 retinal conditions are detectable with our AI model
         </p>
       </div>
     </div>

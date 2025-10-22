@@ -44,7 +44,7 @@ export default function UploadSection({
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
       <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-        <Upload className="w-6 h-6 mr-3 text-emerald-600" />
+        <Upload className="w-6 h-6 mr-3 text-blue-600" />
         Upload Fundus Image
       </h3>
       
@@ -52,10 +52,10 @@ export default function UploadSection({
       <div
         className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
           dragActive 
-            ? 'border-emerald-500 bg-emerald-50' 
+            ? 'border-blue-500 bg-blue-50' 
             : selectedImage 
-              ? 'border-emerald-300 bg-emerald-50' 
-              : 'border-gray-300 hover:border-emerald-400 hover:bg-emerald-50'
+              ? 'border-blue-300 bg-blue-50' 
+              : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -71,7 +71,7 @@ export default function UploadSection({
         
         {selectedImage ? (
           <div className="space-y-4">
-            <div className="w-32 h-32 mx-auto rounded-lg overflow-hidden border-2 border-emerald-200">
+            <div className="w-32 h-32 mx-auto rounded-lg overflow-hidden border-2 border-blue-200">
               <img
                 src={URL.createObjectURL(selectedImage)}
                 alt="Selected fundus"
@@ -79,7 +79,7 @@ export default function UploadSection({
               />
             </div>
             <div>
-              <p className="text-emerald-700 font-medium">{selectedImage.name}</p>
+              <p className="text-blue-700 font-medium">{selectedImage.name}</p>
               <p className="text-sm text-gray-500">
                 {(selectedImage.size / 1024 / 1024).toFixed(2)} MB
               </p>
@@ -105,7 +105,7 @@ export default function UploadSection({
         <button
           onClick={onAnalyze}
           disabled={!selectedImage || isAnalyzing || modelStatus !== 'ready'}
-          className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
         >
           {isAnalyzing ? (
             <>

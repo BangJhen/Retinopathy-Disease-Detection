@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Retinopathy Disease Detection",
-  description: "AI-powered retinopathy disease detection system for early diagnosis and prevention",
+  title: "RetinaScan - AI Retinal Analysis",
+  description: "Advanced AI-powered retinal analysis system for comprehensive eye disease detection and screening",
 };
 
 export default function RootLayout({ children }) {
