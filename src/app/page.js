@@ -186,12 +186,27 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-8">
         {/* Hero Section */}
         <HeroSection />
 
-        {/* First Row - Upload and How It Works */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+        {/* Mobile: How It Works first, then Upload */}
+        <div className="block lg:hidden mb-8">
+          <HowItWorks />
+        </div>
+        
+        <div className="block lg:hidden mb-8">
+          <UploadSection 
+            selectedImage={selectedImage}
+            onImageSelect={handleImageSelect}
+            onAnalyze={handleAnalyze}
+            isAnalyzing={isAnalyzing}
+            modelStatus={modelStatus}
+          />
+        </div>
+
+        {/* Desktop: Side by side layout */}
+        <div className="hidden lg:grid lg:grid-cols-2 gap-8 mb-8">
           <UploadSection 
             selectedImage={selectedImage}
             onImageSelect={handleImageSelect}
@@ -221,8 +236,8 @@ export default function Home() {
 
       {/* Modals and overlays can be added here */}
       {selectedSeverityInfo && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-50 backdrop-blur-md" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)'}}>
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full shadow-2xl border border-white/30">
             <div className="flex items-center space-x-3 mb-4">
               {React.createElement(selectedSeverityInfo.icon, {
                 className: `w-8 h-8 ${selectedSeverityInfo.color}`
@@ -252,8 +267,8 @@ export default function Home() {
 
       {/* Demo Modal */}
       {showDemo && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-50 backdrop-blur-md" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)'}}>
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/30">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-gray-900">Demo Berbagai Kondisi Mata</h3>
               <button
