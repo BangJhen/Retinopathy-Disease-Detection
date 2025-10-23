@@ -1,37 +1,213 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# RetinaScan
 
-## Getting Started
+AI-powered eye disease detection system for 19 different retinal conditions.
 
-First, run the development server:
+## Overview
 
+RetinaScan is a web-based application that uses machine learning to analyze fundus images and detect various eye diseases. The system can identify 19 different conditions including diabetic retinopathy, glaucoma, macular degeneration, and other retinal disorders.
+
+## Features
+
+- Real-time AI analysis of fundus images
+- Detection of 19 eye disease classes
+- Client-side processing for privacy
+- Responsive web interface
+- Demo mode with sample images
+- Medical-grade accuracy reporting
+
+## Technology Stack
+
+- Next.js 14 with App Router
+- ONNX Runtime Web for AI inference
+- EfficientNet-B1 model architecture
+- TailwindCSS for styling
+- Lucide React for icons
+
+## Installation
+
+1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/username/Retinopathy-Disease-Detection.git
+cd Retinopathy-Disease-Detection
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. Add model file
+Place your ONNX model file in the `public` directory:
+```
+public/
+├── model.onnx
+└── [other files]
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Add demo images
+Place sample fundus images in the `public/demo` directory:
+```
+public/demo/
+├── normal.jpg
+├── diabetic-retinopathy.jpg
+├── glaucoma.jpg
+└── [other demo images]
+```
 
-## Learn More
+## Usage
 
-To learn more about Next.js, take a look at the following resources:
+### Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Start the development server:
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+### Production
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Build and start the production server:
+```bash
+npm run build
+npm start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# Retinopathy-Disease-Detection
+## How to Use the Application
+
+### Basic Analysis
+
+1. Open the application in your web browser
+2. Wait for the AI model to load (status shown in header)
+3. Click "Upload Image" or drag and drop a fundus image
+4. Click "Analyze Image" to start the detection process
+5. View the results with confidence scores and recommendations
+
+### Demo Mode
+
+1. Click "Try Demo" in the header
+2. Select any sample image from the demo gallery
+3. The system will simulate analysis and show results
+4. Use this to understand how the application works
+
+### Supported Image Formats
+
+- JPEG (.jpg, .jpeg)
+- PNG (.png)
+- Maximum file size: 10MB
+- Recommended resolution: 288x288 pixels or higher
+
+## Detected Conditions
+
+The system can detect the following eye conditions:
+
+**Retinal Conditions**
+- Normal (healthy eye)
+- Macular Scar
+- Central Serous Chorioretinopathy
+- Drusen
+- Age Macular Degeneration
+- Retinal Detachment
+- Macular Epiretinal Membrane
+- Macular Hole
+
+**Diabetic Retinopathy**
+- Mild Diabetic Retinopathy
+- Severe Diabetic Retinopathy
+- Proliferative Diabetic Retinopathy
+
+**Optic Nerve & Glaucoma**
+- Disc Edema
+- Glaucoma
+
+**Vascular Conditions**
+- Branch Retinal Vein Occlusion
+
+**Surface & Lens**
+- Pterygium
+- Cataract
+
+**Genetic & Other**
+- Retinitis Pigmentosa
+- Myopia
+- Refractive Media Opacity
+
+## Model Information
+
+- Architecture: EfficientNet-B1
+- Input size: 288x288x3 RGB images
+- Output: 19-class probability distribution
+- Framework: ONNX Runtime Web
+- Processing: Client-side inference
+
+## Important Notes
+
+- This application is for screening purposes only
+- Results do not replace professional medical diagnosis
+- Always consult qualified healthcare providers for medical decisions
+- The AI model provides probability scores, not definitive diagnoses
+
+## Browser Requirements
+
+- Modern web browser with WebAssembly support
+- JavaScript enabled
+- Minimum 2GB RAM recommended
+- Stable internet connection for initial load
+
+## File Structure
+
+```
+src/
+├── app/                 # Next.js app directory
+├── components/          # React components
+├── data/               # Demo data and configurations
+├── utils/              # Utility functions and model loaders
+└── styles/             # Global styles
+
+public/
+├── model.onnx          # AI model file (add this)
+├── demo/               # Demo images (add these)
+└── [static assets]
+```
+
+## Configuration
+
+The application uses several configuration files:
+
+- `src/data/eyeConditions.js` - Disease definitions and styling
+- `src/data/demoImages.js` - Demo image configurations
+- `src/utils/imagePreprocessing.js` - Image processing settings
+- `next.config.js` - Next.js configuration
+
+## Troubleshooting
+
+**Model not loading**
+- Ensure model.onnx file is in the public directory
+- Check browser console for error messages
+- Verify WebAssembly support in your browser
+
+**Analysis fails**
+- Check image format and size requirements
+- Ensure stable internet connection
+- Try refreshing the page to reload the model
+
+**Poor performance**
+- Close other browser tabs to free memory
+- Use a device with sufficient RAM
+- Ensure good internet connection speed
+
+## License
+
+This project is for educational and research purposes. Consult appropriate licenses for commercial use.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## Support
+
+For technical issues or questions, please create an issue in the repository or contact the development team.
