@@ -267,13 +267,18 @@ export default function Home() {
 
       {/* Demo Modal */}
       {showDemo && (
-        <div className="fixed inset-0 flex items-center justify-center p-4 z-50 backdrop-blur-md" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)'}}>
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/30">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">Demo Berbagai Kondisi Mata</h3>
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-50 backdrop-blur-md" style={{backgroundColor: 'rgba(0, 0, 0, 0.05)'}}>
+          <div className="bg-white/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/40">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">AI Demo Gallery</h3>
+                <p className="text-gray-600">Experience our AI model with sample fundus images</p>
+              </div>
               <button
                 onClick={() => setShowDemo(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -281,11 +286,15 @@ export default function Home() {
               </button>
             </div>
             
-            <p className="text-gray-600 mb-6">
-              Pilih salah satu contoh gambar fundus untuk melihat bagaimana AI mendeteksi berbagai kondisi mata:
-            </p>
+            {/* Description */}
+            <div className="mb-8 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+              <p className="text-gray-700 text-center">
+                Select any sample fundus image below to see how our AI detects various eye conditions with clinical-grade accuracy
+              </p>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Demo Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
               {demoImages.map((demo) => {
                 const condition = eyeConditions[demo.condition];
                 return (
@@ -293,37 +302,45 @@ export default function Home() {
                     key={demo.id}
                     onClick={() => handleDemoSelect(demo)}
                     disabled={isAnalyzing}
-                    className="p-4 border-2 border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="group p-5 border-2 border-gray-200 rounded-2xl hover:border-blue-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 text-left disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:scale-[1.02]"
                   >
-                    <div className="flex items-center space-x-3 mb-3">
-                      {React.createElement(condition.icon, {
-                        className: `w-6 h-6 ${condition.color}`
-                      })}
-                      <h4 className="font-semibold text-gray-900">{demo.name}</h4>
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className={`p-2 rounded-xl ${condition.bgColor} group-hover:scale-110 transition-transform duration-200`}>
+                        {React.createElement(condition.icon, {
+                          className: `w-5 h-5 ${condition.color}`
+                        })}
+                      </div>
+                      <h4 className="font-semibold text-gray-900 group-hover:text-blue-900 transition-colors">
+                        {demo.name}
+                      </h4>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{demo.description}</p>
+                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">{demo.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className={`text-xs px-2 py-1 rounded-full ${condition.bgColor} ${condition.color} font-medium`}>
+                      <span className={`text-xs px-3 py-1.5 rounded-full ${condition.bgColor} ${condition.color} font-medium border ${condition.borderColor}`}>
                         {condition.label}
                       </span>
-                      <span className="text-xs text-gray-500">
-                        {demo.confidence}% confidence
-                      </span>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold text-gray-900">{demo.confidence}%</div>
+                        <div className="text-xs text-gray-500">confidence</div>
+                      </div>
                     </div>
                   </button>
                 );
               })}
             </div>
             
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <div className="flex items-start space-x-3">
-                <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            {/* Info Banner */}
+            <div className="p-5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200">
+              <div className="flex items-start space-x-4">
+                <div className="p-2 bg-amber-100 rounded-xl">
+                  <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
                 <div>
-                  <h5 className="font-semibold text-blue-900 mb-1">Demo Information</h5>
-                  <p className="text-sm text-blue-800">
-                    Ini adalah simulasi analisis menggunakan data contoh. Hasil yang ditampilkan adalah untuk tujuan demonstrasi dan tidak menggantikan konsultasi medis profesional.
+                  <h5 className="font-semibold text-amber-900 mb-2">Important Notice</h5>
+                  <p className="text-sm text-amber-800 leading-relaxed">
+                    This is a demonstration using sample data. Results are for educational purposes only and do not replace professional medical consultation. Always consult with a qualified healthcare provider for medical diagnosis.
                   </p>
                 </div>
               </div>

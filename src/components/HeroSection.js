@@ -12,7 +12,7 @@ export default function HeroSection() {
         <div className="absolute -top-10 left-1/2 w-48 h-48 md:w-72 md:h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-15 md:opacity-20 animate-pulse animation-delay-4000"></div>
       </div>
 
-      {/* Enhanced Badge with Animation */}
+      {/* Enhanced Badge with Animation
       <div className="inline-flex items-center px-4 py-2 md:px-6 md:py-3 bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 text-blue-800 rounded-full text-xs md:text-sm font-medium mb-6 md:mb-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
         <div className="flex items-center space-x-2">
           <Zap className="w-4 h-4 mr-2 group-hover:animate-pulse" />
@@ -31,7 +31,7 @@ export default function HeroSection() {
             <span>Real-Time</span>
           </span>
         </div>
-      </div>
+      </div> */}
       
       {/* Dynamic Animated Title */}
       <div className="relative mb-8">
